@@ -1,0 +1,130 @@
+/* ==========================================================================
+   MASCOT HERO CHARACTER ANIMATIONS & STYLING
+   ========================================================================== */
+
+.mascot-hero-stage {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+  z-index: 10;
+  margin: 0 auto;
+}
+
+.mascot-character-art {
+  width: 170px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: mascotBreath 3.2s infinite ease-in-out;
+  transform-origin: bottom center;
+  filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.7));
+}
+
+@keyframes mascotBreath {
+  0%, 100% {
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    transform: translateY(-8px) scaleY(1.03);
+  }
+}
+
+.mascot-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.mascot-cape {
+  animation: capeWave 4s infinite alternate ease-in-out;
+  transform-origin: top center;
+}
+
+@keyframes capeWave {
+  0% { transform: scaleX(0.96) rotate(-1deg); }
+  100% { transform: scaleX(1.04) rotate(1.5deg); }
+}
+
+/* Levitating Cards Orbiting Mascot */
+.mascot-orbiting-card {
+  position: absolute;
+  width: 34px;
+  height: 50px;
+  border-radius: 6px;
+  background: radial-gradient(circle at 35% 30%, #352150 0%, #170E24 100%);
+  border: 1.5px solid var(--gold-spark);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8), 0 0 10px rgba(212, 175, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #FFF1A8;
+  pointer-events: none;
+}
+
+.mascot-orbiting-card.c1 {
+  top: 15%;
+  left: 18%;
+  animation: orbitCard1 4.5s infinite ease-in-out;
+}
+
+.mascot-orbiting-card.c2 {
+  top: 25%;
+  right: 18%;
+  animation: orbitCard2 5s infinite ease-in-out 1s;
+}
+
+.mascot-orbiting-card.c3 {
+  top: 60%;
+  left: 12%;
+  animation: orbitCard3 4.2s infinite ease-in-out 2s;
+}
+
+@keyframes orbitCard1 {
+  0%, 100% { transform: translateY(0) rotate(-12deg); }
+  50% { transform: translateY(-16px) rotate(4deg); }
+}
+
+@keyframes orbitCard2 {
+  0%, 100% { transform: translateY(0) rotate(15deg); }
+  50% { transform: translateY(-14px) rotate(-6deg); }
+}
+
+@keyframes orbitCard3 {
+  0%, 100% { transform: translateY(0) rotate(-8deg); }
+  50% { transform: translateY(-12px) rotate(10deg); }
+}
+
+/* Mascot Name Tag */
+.mascot-badge-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(14, 9, 23, 0.9);
+  border: 1.5px solid var(--gold-main);
+  border-radius: 999px;
+  padding: 4px 14px;
+  margin-top: -6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+  z-index: 15;
+}
+
+.mascot-crown-icon {
+  font-size: 0.95rem;
+}
+
+.mascot-title-text {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #FFF1A8;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}

@@ -1,0 +1,259 @@
+/* ==========================================================================
+   VAULT, PROFILE & SOCIAL STYLES (Game-like visual hierarchy)
+   ========================================================================== */
+
+/* Vault Container */
+.collection-scene-container,
+.profile-scene-container,
+.friends-scene-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.collection-content-body,
+.profile-content-body,
+.friends-content-body {
+  position: relative;
+  z-index: 10;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Vault Tabs */
+.vault-tabs-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.vault-tab-btn {
+  flex: 1;
+  background: linear-gradient(180deg, #2D1D45 0%, #170E25 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  border-radius: 999px;
+  color: #9284AD;
+  font-family: var(--font-ui);
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 8px 4px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  transition: all 0.15s ease;
+}
+
+.vault-tab-btn.active {
+  background: var(--gold-btn-gradient);
+  color: #1A0F00;
+  border-color: #FFF1A8;
+  box-shadow: 0 4px 14px rgba(255, 215, 0, 0.6);
+}
+
+.vault-showcase-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vault-item-card {
+  border-radius: 18px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, rgba(38, 26, 58, 0.95) 0%, rgba(18, 12, 28, 0.95) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.7);
+  transition: transform 0.15s ease;
+}
+
+.vault-item-card.equipped {
+  border-color: var(--gold-main);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+/* Avatars Grid */
+.vault-avatars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.vault-avatar-pod {
+  background: rgba(22, 14, 34, 0.85);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+  padding: 12px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.vault-avatar-pod.equipped {
+  border-color: var(--gold-spark);
+  background: linear-gradient(180deg, #3C2658 0%, #1A0F2B 100%);
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.5);
+  transform: scale(1.05);
+}
+
+.avatar-pod-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #FFF1A8;
+  margin-top: 4px;
+}
+
+/* Profile Identity */
+.profile-identity-card {
+  background: linear-gradient(180deg, rgba(38, 26, 58, 0.95) 0%, rgba(18, 12, 28, 0.95) 100%);
+  border: 2.5px solid var(--gold-main);
+  border-radius: 22px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(212, 175, 55, 0.3);
+  margin-bottom: 16px;
+}
+
+.profile-big-avatar {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #4D3370 0%, #1A0F2B 100%);
+  border: 3.5px solid var(--gold-spark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.2rem;
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+}
+
+.profile-hero-name {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #FFFFFF;
+}
+
+.profile-name-input {
+  background: rgba(14, 9, 23, 0.9);
+  border: 1.5px solid var(--gold-main);
+  color: #FFF1A8;
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 10px;
+  outline: none;
+}
+
+.profile-level-tag {
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: #FFF1A8;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+
+.profile-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.profile-stat-pod {
+  background: rgba(14, 9, 23, 0.85);
+  border: 1.5px solid rgba(212, 175, 55, 0.3);
+  border-radius: 14px;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+
+.stat-lbl {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #9284AD;
+  margin-top: 2px;
+}
+
+.achievement-medal-card {
+  background: rgba(22, 14, 34, 0.85);
+  border: 1.5px solid rgba(212, 175, 55, 0.3);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Friends Allies Tray */
+.friends-list-tray {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.friend-ally-card {
+  background: linear-gradient(180deg, rgba(38, 26, 58, 0.95) 0%, rgba(18, 12, 28, 0.95) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.friend-avatar-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #25163D;
+  border: 2px solid var(--gold-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+}
+
+/* Modal Dialogs */
+.game-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 6, 17, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.game-modal-dialog {
+  background: linear-gradient(180deg, #2D1D45 0%, #170E25 100%);
+  border: 2.5px solid var(--gold-main);
+  border-radius: 22px;
+  padding: 22px;
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.4);
+}

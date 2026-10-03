@@ -1,0 +1,33 @@
+export const COLORS = {
+  RED: 'RED',
+  BLUE: 'BLUE',
+  GREEN: 'GREEN',
+  YELLOW: 'YELLOW',
+  WILD: 'WILD'
+};
+
+export const COLOR_HEX = {
+  RED: '#FF3B30',
+  BLUE: '#0A84FF',
+  GREEN: '#30D158',
+  YELLOW: '#FFD60A',
+  WILD: '#9933FF'
+};
+
+export const CARD_TYPES = {
+  NUMBER: 'NUMBER',
+  SKIP: 'SKIP',
+  REVERSE: 'REVERSE',
+  DRAW_TWO: 'DRAW_TWO',
+  WILD: 'WILD',
+  WILD_DRAW_FOUR: 'WILD_DRAW_FOUR'
+};
+
+export const GAME_STATUS = {
+  LOBBY: 'LOBBY',
+  COUNTDOWN: 'COUNTDOWN',
+  IN_PROGRESS: 'IN_PROGRESS',
+  FINISHED: 'FINISHED'
+};
+
+export const TURN_TIMEOUT_SECONDS = 15;

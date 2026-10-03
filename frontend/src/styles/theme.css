@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Royal Dark Palette */
+  --bg-darkest: #08070D;
+  --bg-dark: #0D0B16;
+  --bg-deep: #14101F;
+  --surface-royal-1: #1A1428;
+  --surface-royal-2: #241A35;
+  --surface-royal-3: #302044;
+  --surface-glass: rgba(26, 20, 40, 0.75);
+
+  /* Premium Royal Gold */
+  --gold-primary: #D4AF37;
+  --gold-light: #F5D76E;
+  --gold-sparkle: #FFF1A8;
+  --gold-dark: #9A7B20;
+  --gold-gradient: linear-gradient(135deg, #FFF1A8 0%, #F5D76E 25%, #D4AF37 60%, #9A7B20 100%);
+  --gold-border: 1px solid rgba(212, 175, 55, 0.4);
+  --gold-glow: 0 0 15px rgba(212, 175, 55, 0.5);
+
+  /* Card Colors */
+  --card-red: #FF3B30;
+  --card-blue: #0A84FF;
+  --card-green: #30D158;
+  --card-yellow: #FFD60A;
+  --card-wild-grad: linear-gradient(135deg, #FF3B30 0%, #0A84FF 33%, #30D158 66%, #FFD60A 100%);
+
+  /* Text Colors */
+  --text-pure: #FFFFFF;
+  --text-light: #D7D2E3;
+  --text-muted: #918AA3;
+
+  /* Typography */
+  --font-royal: 'Cinzel', serif;
+  --font-game: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Shadows */
+  --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-deep: 0 8px 30px rgba(0, 0, 0, 0.7);
+  --shadow-royal: 0 12px 40px rgba(13, 11, 22, 0.9), 0 0 20px rgba(212, 175, 55, 0.2);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-pill: 9999px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--bg-darkest);
+  color: var(--text-light);
+  font-family: var(--font-game);
+  overflow-x: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Royal Buttons */
+.btn-royal {
+  background: var(--gold-gradient);
+  color: #120E1C;
+  font-family: var(--font-game);
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 14px 32px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn-royal:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6), inset 0 2px 0 rgba(255, 255, 255, 0.8);
+  filter: brightness(1.08);
+}
+
+.btn-royal:active {
+  transform: translateY(1px);
+  box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+}
+
+.btn-royal-glass {
+  background: rgba(36, 26, 53, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: var(--text-pure);
+  font-weight: 700;
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-royal-glass:hover {
+  background: rgba(48, 32, 68, 0.85);
+  border-color: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 175, 55, 0.25);
+}
+
+.btn-royal-glass:active {
+  transform: translateY(1px);
+}
+
+/* Glass Panel */
+.glass-panel {
+  background: rgba(26, 20, 40, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-royal);
+}
+
+/* Gold Text Gradient */
+.gold-text {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: var(--font-royal);
+  font-weight: 900;
+}

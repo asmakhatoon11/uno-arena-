@@ -1,0 +1,14 @@
+{
+  "name": "uno-arena-root",
+  "version": "1.0.0",
+  "description": "UNO ARENA — Play. Match. Shout UNO.",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run start",
+    "build:frontend": "cd frontend && npm run build",
+    "test:backend": "cd backend && node test-game.js"
+  },
+  "keywords": ["uno", "game", "mobile", "multiplayer", "react", "socketio"],
+  "author": "",
+  "license": "ISC"
+}

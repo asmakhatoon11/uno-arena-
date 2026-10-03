@@ -1,0 +1,230 @@
+/* ===================================================
+   UNO ARENA - ROYAL 3D CARD COMPONENT STYLES
+   =================================================== */
+
+.arena-card {
+  position: relative;
+  width: 76px;
+  height: 114px;
+  border-radius: 12px;
+  background-color: #1A1428;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.22s ease, filter 0.2s ease;
+  transform-style: preserve-3d;
+  touch-action: manipulation;
+  overflow: hidden;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* Card Sizes for Arena vs Hand vs Mini */
+.arena-card.size-sm {
+  width: 52px;
+  height: 78px;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.arena-card.size-lg {
+  width: 90px;
+  height: 135px;
+  border-radius: 14px;
+  padding: 8px;
+}
+
+/* Color Themes with Glossy Radial Gradients */
+.arena-card.color-red {
+  background: radial-gradient(circle at 35% 30%, #FF6058 0%, #FF3B30 50%, #B8150D 100%);
+  border-color: rgba(255, 220, 220, 0.9);
+}
+
+.arena-card.color-blue {
+  background: radial-gradient(circle at 35% 30%, #3DA5FF 0%, #0A84FF 50%, #0050A8 100%);
+  border-color: rgba(220, 240, 255, 0.9);
+}
+
+.arena-card.color-green {
+  background: radial-gradient(circle at 35% 30%, #5BE67F 0%, #30D158 50%, #158032 100%);
+  border-color: rgba(220, 255, 230, 0.9);
+}
+
+.arena-card.color-yellow {
+  background: radial-gradient(circle at 35% 30%, #FFE65E 0%, #FFD60A 50%, #B89600 100%);
+  border-color: rgba(255, 255, 220, 0.9);
+}
+
+.arena-card.color-wild {
+  background: radial-gradient(circle at 35% 30%, #2A1F40 0%, #160F25 60%, #0B0714 100%);
+  border-color: var(--gold-light);
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.35);
+}
+
+/* Glossy Surface Highlight Sweep */
+.arena-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 180%;
+  height: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(255, 255, 255, 0) 70%);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  pointer-events: none;
+}
+
+/* Inner Royal Oval Emblem */
+.card-inner-oval {
+  position: absolute;
+  top: 10%;
+  left: 8%;
+  right: 8%;
+  bottom: 10%;
+  border-radius: 50% / 40%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  transform: rotate(-25deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.color-wild .card-inner-oval {
+  background: conic-gradient(
+    #FF3B30 0deg 90deg,
+    #0A84FF 90deg 180deg,
+    #30D158 180deg 270deg,
+    #FFD60A 270deg 360deg
+  );
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+}
+
+/* Card Face Content */
+.card-center-symbol {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-royal);
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 255, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.arena-card.size-sm .card-center-symbol {
+  font-size: 1.4rem;
+}
+
+.arena-card.size-lg .card-center-symbol {
+  font-size: 2.5rem;
+}
+
+/* Card Corner Badges */
+.card-corner {
+  font-family: var(--font-game);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  line-height: 1;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.card-corner.corner-top-left {
+  align-self: flex-start;
+}
+
+.card-corner.corner-bottom-right {
+  align-self: flex-end;
+  transform: rotate(180deg);
+}
+
+.arena-card.size-sm .card-corner {
+  font-size: 0.65rem;
+}
+
+/* Playable Card Glow & Breathing Effect */
+.arena-card.playable {
+  cursor: pointer;
+  animation: playablePulse 1.8s infinite ease-in-out;
+  border-color: var(--gold-sparkle);
+}
+
+@keyframes playablePulse {
+  0%, 100% {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), 0 0 12px rgba(255, 241, 168, 0.65);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.7), 0 0 20px rgba(212, 175, 55, 0.95);
+    transform: translateY(-4px);
+  }
+}
+
+/* Selected Card Rise Up */
+.arena-card.selected {
+  transform: translateY(-26px) scale(1.08) !important;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.8), 0 0 24px rgba(255, 215, 0, 0.9) !important;
+  border-color: #FFFFFF !important;
+  z-index: 50 !important;
+}
+
+/* Shake Invalid Play */
+.arena-card.invalid-shake {
+  animation: shakeCard 0.4s ease-in-out;
+}
+
+@keyframes shakeCard {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-4deg); }
+  40% { transform: translateX(8px) rotate(4deg); }
+  60% { transform: translateX(-5px) rotate(-2deg); }
+  80% { transform: translateX(5px) rotate(2deg); }
+}
+
+/* Card Back Design */
+.arena-card.card-back {
+  background: radial-gradient(circle at 50% 50%, #2A1D40 0%, #160F25 70%, #0C0816 100%);
+  border: 2px solid var(--gold-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.card-back .card-back-pattern {
+  width: 82%;
+  height: 86%;
+  border-radius: 8px;
+  border: 1px dashed rgba(212, 175, 55, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 11, 22, 0.5);
+}
+
+.card-back .card-back-logo {
+  font-family: var(--font-royal);
+  font-weight: 900;
+  font-size: 0.9rem;
+  color: var(--gold-light);
+  transform: rotate(-35deg);
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.8);
+  letter-spacing: 1px;
+}

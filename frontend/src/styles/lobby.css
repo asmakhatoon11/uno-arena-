@@ -1,0 +1,203 @@
+/* ==========================================================================
+   MOBILE GAME LOBBY STYLES (Hero Area, 3D Capsules & Academy)
+   ========================================================================== */
+
+.lobby-stage-container {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 14px 14px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
+}
+
+/* Hero Section */
+.lobby-hero-section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 4px;
+  z-index: 10;
+}
+
+.lobby-season-ribbon {
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.4) 30%, rgba(212, 175, 55, 0.75) 50%, rgba(212, 175, 55, 0.4) 70%, transparent 100%);
+  padding: 4px 20px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #FFF9C4;
+  letter-spacing: 1.5px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  margin-bottom: 6px;
+}
+
+.lobby-play-btn-wrapper {
+  margin-top: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Mode Capsules 2x2 Grid */
+.lobby-mode-capsules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  z-index: 10;
+  margin-bottom: 10px;
+}
+
+.game-mode-capsule {
+  position: relative;
+  background: linear-gradient(180deg, rgba(35, 24, 52, 0.9) 0%, rgba(18, 12, 28, 0.95) 100%);
+  border: 1.5px solid rgba(212, 175, 55, 0.35);
+  border-radius: 16px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, border-color 0.15s ease;
+  overflow: hidden;
+}
+
+.game-mode-capsule:hover {
+  transform: translateY(-2px);
+  border-color: var(--gold-main);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.75), 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.game-mode-capsule:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.game-mode-capsule.c-yellow { border-left: 4px solid #FFD60A; }
+.game-mode-capsule.c-blue   { border-left: 4px solid #0A84FF; }
+.game-mode-capsule.c-green  { border-left: 4px solid #30D158; }
+.game-mode-capsule.c-red    { border-left: 4px solid #FF3B30; }
+
+.mode-icon-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mode-icon-circle.yellow { background: rgba(255, 214, 10, 0.15); }
+.mode-icon-circle.blue   { background: rgba(10, 132, 255, 0.15); }
+.mode-icon-circle.green  { background: rgba(48, 209, 88, 0.15); }
+.mode-icon-circle.red    { background: rgba(255, 59, 48, 0.15); }
+
+.mode-text-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.mode-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.mode-desc {
+  font-size: 0.65rem;
+  color: #9284AD;
+  margin-top: 1px;
+}
+
+.mode-badge-pill {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 0.58rem;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  padding: 1px 5px;
+  border-radius: 999px;
+}
+
+.mode-badge-pill.hot {
+  background: #FF3B30;
+  color: #FFFFFF;
+  box-shadow: 0 0 8px rgba(255, 59, 48, 0.8);
+}
+
+/* Interactive Academy Banner */
+.lobby-tutorial-bar {
+  background: linear-gradient(90deg, rgba(45, 30, 68, 0.95) 0%, rgba(25, 17, 38, 0.95) 100%);
+  border: 1.5px solid var(--gold-main);
+  border-radius: 16px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  transition: transform 0.15s ease;
+}
+
+.lobby-tutorial-bar:hover {
+  transform: translateY(-2px);
+  border-color: #FFF1A8;
+}
+
+.tutorial-book-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(212, 175, 55, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .lobby-stage-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 16px 24px 20px 24px;
+  }
+
+  .lobby-mode-capsules-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  .game-mode-capsule {
+    padding: 16px 12px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .mode-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .mode-title {
+    font-size: 0.92rem;
+  }
+
+  .mode-desc {
+    font-size: 0.72rem;
+  }
+}
+

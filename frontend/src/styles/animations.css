@@ -1,0 +1,134 @@
+/* ===================================================
+   UNO ARENA - CARD FLIGHT & SPECIAL VFX ANIMATIONS
+   =================================================== */
+
+/* Card Flying from Hand to Center Discard Pile */
+.flying-card-element {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  transition: all 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+/* Special Action Energy Overlays */
+
+/* 1. Skip Energy Shield */
+.vfx-skip-barrier {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 4px solid #FF3B30;
+  box-shadow: 0 0 30px #FF3B30, inset 0 0 20px #FF3B30;
+  animation: skipBarrierPulse 0.8s forwards ease-out;
+  pointer-events: none;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #FFFFFF;
+}
+
+@keyframes skipBarrierPulse {
+  0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+  40% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.4); opacity: 0; }
+}
+
+/* 2. Reverse Directional Twirl */
+.vfx-reverse-twirl {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 4px dashed var(--gold-light);
+  box-shadow: 0 0 25px var(--gold-primary);
+  animation: reverseSpinPulse 0.9s forwards cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+  z-index: 60;
+}
+
+@keyframes reverseSpinPulse {
+  0% { transform: translate(-50%, -50%) rotate(0deg) scale(0.4); opacity: 0; }
+  50% { transform: translate(-50%, -50%) rotate(360deg) scale(1.1); opacity: 1; }
+  100% { transform: translate(-50%, -50%) rotate(720deg) scale(1.3); opacity: 0; }
+}
+
+/* 3. Wild Rainbow Crystal Explosion */
+.vfx-wild-explosion {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 59, 48, 0.7) 25%, rgba(10, 132, 255, 0.7) 50%, rgba(48, 209, 88, 0.7) 75%, transparent 100%);
+  filter: blur(8px);
+  animation: wildBurst 0.9s forwards ease-out;
+  pointer-events: none;
+  z-index: 60;
+}
+
+@keyframes wildBurst {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+}
+
+/* 4. Dramatic Full-Screen UNO Shout Banner */
+.vfx-uno-shout-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, rgba(255, 59, 48, 0.35) 0%, rgba(8, 7, 13, 0.8) 80%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  pointer-events: none;
+  animation: unoOverlayFade 1.6s forwards ease-out;
+}
+
+.vfx-uno-title {
+  font-family: var(--font-royal);
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: #FFF1A8;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 59, 48, 0.9);
+  animation: unoTitlePop 1.6s forwards cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  letter-spacing: 4px;
+}
+
+.vfx-uno-subtitle {
+  font-family: var(--font-game);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-top: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+@keyframes unoOverlayFade {
+  0% { opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes unoTitlePop {
+  0% { transform: scale(0.4) rotate(-10deg); opacity: 0; }
+  25% { transform: scale(1.2) rotate(4deg); opacity: 1; }
+  75% { transform: scale(1) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.1) rotate(0deg); opacity: 0; }
+}

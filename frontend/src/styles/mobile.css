@@ -1,0 +1,133 @@
+/* ===================================================
+   UNO ARENA - MOBILE FIRST & RESPONSIVE LAYOUT
+   =================================================== */
+
+/* Desktop Frame Simulator Wrapper */
+.app-viewport-wrapper {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #040307;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Simulated Mobile Device Container (Target 390x844) */
+.mobile-device-frame {
+  width: 100%;
+  max-width: 440px;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 920px;
+  background-color: var(--bg-darkest);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 25px rgba(212, 175, 55, 0.15);
+  border-radius: 0;
+}
+
+@media (min-width: 500px) {
+  .mobile-device-frame.simulated-phone {
+    border-radius: 36px;
+    height: 844px;
+    width: 390px;
+    border: 3px solid rgba(212, 175, 55, 0.35);
+  }
+}
+
+.mobile-device-frame.fullscreen-mode {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 0;
+  border: none;
+}
+
+/* Device Mode Switcher Floating in Top-Right for Developers/Testers */
+.device-toggle-pill {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(26, 20, 40, 0.9);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+.device-toggle-pill:hover {
+  background: rgba(48, 32, 68, 1);
+  transform: scale(1.04);
+}
+
+/* Mobile Screen Specific Adjustments */
+@media (max-width: 390px) {
+  .arena-card {
+    width: 66px;
+    height: 98px;
+    padding: 4px;
+  }
+  .card-center-symbol {
+    font-size: 1.8rem;
+  }
+  .royal-table {
+    width: 94%;
+    height: 68%;
+    border-radius: 120px;
+  }
+  .player-hand-fanned {
+    height: 106px;
+  }
+  .hand-card-slot {
+    margin-left: -28px;
+  }
+}
+
+@media (max-width: 360px) {
+  .arena-card {
+    width: 60px;
+    height: 90px;
+  }
+  .card-center-symbol {
+    font-size: 1.6rem;
+  }
+  .royal-table {
+    width: 96%;
+    height: 64%;
+    border-radius: 100px;
+  }
+  .hand-card-slot {
+    margin-left: -26px;
+  }
+}
+
+/* Touch Targets Standard */
+button, 
+.arena-card, 
+.seat-avatar-box, 
+.icon-btn-round {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Accessibility: Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

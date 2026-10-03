@@ -1,0 +1,257 @@
+/* ============================================================================
+   UNO ARENA — DEVICE-FIRST RESPONSIVE LAYOUT
+   Final override layer. Keeps the existing visual design but prevents
+   desktop sizing from leaking into touch landscape devices.
+   ============================================================================ */
+
+/* Touch landscape devices: treat the viewport as a compact game canvas,
+   regardless of CSS pixel width reported by Android/iOS browsers. */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) {
+  html,
+  body,
+  #root,
+  .game-viewport,
+  .game-stage,
+  .arena-page-root {
+    width: 100% !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .game-stage,
+  .game-stage.framed,
+  .game-stage.fullscreen,
+  .game-stage.desktop {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    max-height: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+
+  .device-toggle-pill {
+    display: none !important;
+  }
+
+  .game-top-hud {
+    position: relative !important;
+    z-index: 120 !important;
+    flex: 0 0 clamp(38px, 9dvh, 52px) !important;
+    height: clamp(38px, 9dvh, 52px) !important;
+    min-height: 38px !important;
+    max-height: 52px !important;
+    padding: 4px clamp(8px, 2vw, 18px) !important;
+    gap: 6px !important;
+  }
+
+  .game-btn-circle {
+    width: clamp(30px, 6vw, 38px) !important;
+    height: clamp(30px, 6vw, 38px) !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    padding: 6px !important;
+  }
+
+  .game-btn-pill {
+    padding: 4px 9px !important;
+    font-size: clamp(0.62rem, 1.5vw, 0.78rem) !important;
+  }
+
+  .game-arena-top-title {
+    font-size: clamp(0.8rem, 2.2vw, 1.05rem) !important;
+  }
+
+  /* The middle area owns all remaining height. Nothing is allowed to force
+     it taller than the viewport. */
+  .game-table-stage {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+    width: 100% !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    position: relative !important;
+  }
+
+  .grand-felt-table {
+    width: min(68vw, 760px) !important;
+    height: min(42dvh, 260px) !important;
+    min-width: 260px !important;
+    min-height: 125px !important;
+    max-width: 760px !important;
+    max-height: 260px !important;
+    border-width: clamp(3px, 0.45vw, 5px) !important;
+    border-radius: 999px !important;
+  }
+
+  .table-piles-hub {
+    gap: clamp(10px, 2vw, 22px) !important;
+  }
+
+  .table-piles-hub .game-card-3d.size-lg {
+    width: clamp(46px, 6vw, 72px) !important;
+    height: clamp(68px, 9vw, 106px) !important;
+    border-radius: 10px !important;
+    padding: 4px !important;
+  }
+
+  .table-orbit-ring {
+    width: clamp(105px, 17vw, 190px) !important;
+    height: clamp(105px, 17vw, 190px) !important;
+  }
+
+  /* Keep opponents around the table instead of inside it. */
+  .game-seat-frame.seat-top {
+    top: clamp(0px, 0.7dvh, 6px) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .game-seat-frame.seat-top-left {
+    top: clamp(0px, 0.7dvh, 6px) !important;
+    left: 16% !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .game-seat-frame.seat-top-right {
+    top: clamp(0px, 0.7dvh, 6px) !important;
+    right: 16% !important;
+    transform: translateX(50%) !important;
+  }
+
+  .game-seat-frame.seat-left {
+    left: clamp(4px, 0.8vw, 12px) !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .game-seat-frame.seat-right {
+    right: clamp(4px, 0.8vw, 12px) !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+
+  .seat-portrait-circle {
+    width: clamp(34px, 5.2vw, 48px) !important;
+    height: clamp(34px, 5.2vw, 48px) !important;
+    font-size: clamp(1rem, 2.2vw, 1.35rem) !important;
+  }
+
+  .seat-timer-ring-svg {
+    width: calc(clamp(34px, 5.2vw, 48px) + 8px) !important;
+    height: calc(clamp(34px, 5.2vw, 48px) + 8px) !important;
+    top: -4px !important;
+    left: -4px !important;
+  }
+
+  .seat-name-plate {
+    font-size: clamp(0.55rem, 1.25vw, 0.72rem) !important;
+    max-width: clamp(54px, 9vw, 90px) !important;
+    padding: 1px 5px !important;
+    margin-top: 2px !important;
+  }
+
+  .opponent-card-fan.fan-top {
+    width: clamp(72px, 11vw, 125px) !important;
+    height: clamp(28px, 5vw, 52px) !important;
+  }
+
+  .opponent-card-fan.fan-side {
+    width: clamp(34px, 5vw, 58px) !important;
+    height: clamp(56px, 10vw, 88px) !important;
+  }
+
+  /* Player hand gets a fixed bottom zone; the table never competes with it. */
+  .bottom-player-section {
+    position: relative !important;
+    flex: 0 0 clamp(88px, 22dvh, 126px) !important;
+    height: clamp(88px, 22dvh, 126px) !important;
+    min-height: 88px !important;
+    max-height: 126px !important;
+    width: 100% !important;
+    padding: 0 0 env(safe-area-inset-bottom, 2px) !important;
+    margin: 0 !important;
+    justify-content: flex-end !important;
+    z-index: 100 !important;
+  }
+
+  .hand-action-bar {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 0 2px !important;
+    gap: 6px !important;
+    z-index: 105 !important;
+  }
+
+  .hand-action-bar .game-btn-circle {
+    width: 30px !important;
+    height: 30px !important;
+  }
+
+  .hand-action-bar .game-btn-play {
+    min-height: 30px !important;
+    padding: 4px 14px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .player-hand-arc-container {
+    width: min(86vw, 680px) !important;
+    max-width: none !important;
+    height: clamp(64px, 14dvh, 86px) !important;
+    min-height: 64px !important;
+    max-height: 86px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    overflow: visible !important;
+  }
+
+  .player-hand-arc-container .hand-card-arc-slot {
+    width: clamp(46px, 5.4vw, 62px) !important;
+    height: clamp(68px, 8.1vw, 92px) !important;
+    margin-left: calc(clamp(46px, 5.4vw, 62px) / -2) !important;
+  }
+
+  .player-hand-arc-container .hand-card-arc-slot .game-card-3d {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 9px !important;
+    padding: 4px !important;
+  }
+
+  /* On very short landscape screens, compress a little more. */
+  @media (max-height: 430px) {
+    .game-top-hud {
+      flex-basis: 40px !important;
+      height: 40px !important;
+    }
+
+    .grand-felt-table {
+      height: min(39dvh, 185px) !important;
+      min-height: 112px !important;
+    }
+
+    .bottom-player-section {
+      flex-basis: 82px !important;
+      height: 82px !important;
+      min-height: 82px !important;
+    }
+
+    .player-hand-arc-container {
+      height: 58px !important;
+      min-height: 58px !important;
+    }
+  }
+}
+
+/* Normal desktop/tablet: preserve the premium wide layout. */
+@media (hover: hover) and (pointer: fine) and (min-width: 900px) {
+  .game-table-stage {
+    padding: 24px 40px 175px 40px;
+  }
+}
