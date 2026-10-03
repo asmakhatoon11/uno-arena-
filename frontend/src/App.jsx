@@ -15,7 +15,7 @@ import GameHUD from './components/GameHUD';
 import GameBottomDock from './components/GameBottomDock';
 import GameErrorBoundary from './components/GameErrorBoundary';
 import HowToPlayModal from './components/HowToPlayModal';
-import { LocalGameEngine } from './game/localEngine';
+import { SocketGameEngine } from './game/socketEngine';
 import { storageService } from './services/storageService';
 import { audioService } from './services/audioService';
 import { GAME_MODES } from './utils/constants';
@@ -89,19 +89,24 @@ export default function App() {
   };
 
   // Launch Game Arena Match
-  const launchMatch = (botCount = 3) => {
-    try { audioService.unlock?.(); } catch {}
-    const engine = new LocalGameEngine(
-      {
-        id: profile.id,
-        name: profile.name,
-        avatar: profile.avatar
-      },
-      botCount
-    );
-    setActiveEngine(engine);
-    setPage('ARENA');
-  };
+const launchMatch = () => {
+  try { audioService.unlock?.(); } catch {}
+
+  const engine = new SocketGameEngine(
+    {
+      id: profile.id,
+      name: profile.name,
+      avatar: profile.avatar
+    },
+    {
+      mode: 'QUICK_MATCH',
+      arena: 'ROYAL_PALACE'
+    }
+  );
+
+  setActiveEngine(engine);
+  setPage('ARENA');
+};
 
   const handleSelectMode = (mode) => {
     if (mode === GAME_MODES.QUICK_MATCH) {
