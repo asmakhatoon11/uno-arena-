@@ -664,3 +664,74 @@ export class SocketGameEngine {
     this.connected = false;
   }
 }
+  getState(forPlayerId = this.player.id) {
+    if (!this.state) {
+      return {
+        roomId: this.roomId,
+        status: 'LOBBY',
+        direction: 1,
+        currentColor: null,
+        topCard: null,
+        deckRemaining: 0,
+        discardCount: 0,
+        currentTurnPlayerId: null,
+        turnStartTime: Date.now(),
+        turnDuration: 15,
+        winner: null,
+        lastAction: null,
+        players: [],
+        connected: this.connected,
+        hasDrawnThisTurn: this.hasDrawnThisTurn,
+        lastReaction: this.lastReaction,
+        lastUno: this.lastUno
+      };
+    }
+
+    // Backend uses socket.id.
+    // Frontend uses playerProfile.id.
+    // Map the local socket player back to the frontend ID.
+    const localSocketId = this.socket?.id;
+
+    const players = this.state.players.map(player => {
+      const isLocalPlayer =
+        localSocketId &&
+        player.id === localSocketId;
+
+      return {
+        ...player,
+
+        id: isLocalPlayer
+          ? this.player.id
+          : player.id,
+
+        // Keep the real hand only for the local player.
+        hand: isLocalPlayer
+          ? [...(player.hand || [])]
+          : []
+      };
+    });
+
+    const currentTurnPlayerId =
+      this.state.currentTurnPlayerId === localSocketId
+        ? this.player.id
+        : this.state.currentTurnPlayerId;
+
+    return {
+      ...this.state,
+
+      connected: this.connected,
+
+      currentTurnPlayerId,
+
+      hasDrawnThisTurn:
+        this.hasDrawnThisTurn,
+
+      lastReaction:
+        this.lastReaction,
+
+      lastUno:
+        this.lastUno,
+
+      players
+    };
+  }
