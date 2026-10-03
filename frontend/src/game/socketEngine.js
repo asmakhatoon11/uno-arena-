@@ -1,3 +1,4 @@
+```javascript
 import { io } from 'socket.io-client';
 
 const BACKEND_URL =
@@ -89,10 +90,6 @@ export class SocketGameEngine {
     const nextTurnPlayerId =
       state.currentTurnPlayerId;
 
-    /*
-     * Only reset the local draw flag when the turn actually changes.
-     * A DRAW_CARD update must not remove the "already drawn" state.
-     */
     if (
       this.previousTurnPlayerId !== null &&
       this.previousTurnPlayerId !== nextTurnPlayerId
@@ -167,13 +164,6 @@ export class SocketGameEngine {
     };
   }
 
-  /*
-   * QUICK_MATCH:
-   * Do NOT create a room first.
-   *
-   * The backend matchmaking queue creates the room
-   * and adds this player exactly once.
-   */
   createRoom(
     mode = 'QUICK_MATCH',
     arena = 'ROYAL_PALACE'
@@ -237,9 +227,7 @@ export class SocketGameEngine {
           result.roomId;
 
         if (result.state) {
-          this.applyState(
-            result.state
-          );
+          this.applyState(result.state);
         }
       }
     );
@@ -269,14 +257,8 @@ export class SocketGameEngine {
           result.roomId ||
           this.roomId;
 
-        /*
-         * Some backend versions return the initial
-         * state directly. Apply it when available.
-         */
         if (result.state) {
-          this.applyState(
-            result.state
-          );
+          this.applyState(result.state);
         }
       }
     );
@@ -321,10 +303,7 @@ export class SocketGameEngine {
       };
     }
 
-    if (
-      playerId !==
-      this.player.id
-    ) {
+    if (playerId !== this.player.id) {
       return {
         success: false,
         error: 'Invalid player'
@@ -361,10 +340,7 @@ export class SocketGameEngine {
       };
     }
 
-    if (
-      playerId !==
-      this.player.id
-    ) {
+    if (playerId !== this.player.id) {
       return {
         success: false,
         error: 'Invalid player'
@@ -378,8 +354,7 @@ export class SocketGameEngine {
       {},
       result => {
         if (!result?.success) {
-          this.hasDrawnThisTurn =
-            false;
+          this.hasDrawnThisTurn = false;
 
           console.error(
             'DRAW_CARD failed:',
@@ -389,8 +364,7 @@ export class SocketGameEngine {
           return;
         }
 
-        this.hasDrawnThisTurn =
-          true;
+        this.hasDrawnThisTurn = true;
       }
     );
 
@@ -409,18 +383,14 @@ export class SocketGameEngine {
       };
     }
 
-    if (
-      playerId !==
-      this.player.id
-    ) {
+    if (playerId !== this.player.id) {
       return {
         success: false,
         error: 'Invalid player'
       };
     }
 
-    this.hasDrawnThisTurn =
-      false;
+    this.hasDrawnThisTurn = false;
 
     this.socket.emit(
       'PASS_TURN',
@@ -444,8 +414,7 @@ export class SocketGameEngine {
   callUno(playerId) {
     if (
       !this.socket ||
-      playerId !==
-        this.player.id
+      playerId !== this.player.id
     ) {
       return false;
     }
@@ -467,9 +436,7 @@ export class SocketGameEngine {
   }
 
   catchUno(targetPlayerId) {
-    if (!this.socket) {
-      return false;
-    }
+    if (!this.socket) return false;
 
     this.socket.emit(
       'CATCH_UNO',
@@ -532,41 +499,33 @@ export class SocketGameEngine {
   }
 
   canPlayCard(card) {
-    if (
-      !this.state?.topCard ||
-      !card
-    ) {
+    if (!this.state?.topCard || !card) {
       return false;
     }
 
     if (
       card.type === 'WILD' ||
-      card.type ===
-        'WILD_DRAW_FOUR'
+      card.type === 'WILD_DRAW_FOUR'
     ) {
       return true;
     }
 
     if (
-      card.color ===
-      this.state.currentColor
+      card.color === this.state.currentColor
     ) {
       return true;
     }
 
     if (
       card.type === 'NUMBER' &&
-      this.state.topCard.type ===
-        'NUMBER' &&
-      card.value ===
-        this.state.topCard.value
+      this.state.topCard.type === 'NUMBER' &&
+      card.value === this.state.topCard.value
     ) {
       return true;
     }
 
     if (
-      card.type ===
-        this.state.topCard.type &&
+      card.type === this.state.topCard.type &&
       card.type !== 'NUMBER'
     ) {
       return true;
@@ -580,90 +539,11 @@ export class SocketGameEngine {
       this.players.find(
         player =>
           player.id ===
-          this.state
-            ?.currentTurnPlayerId
+          this.state?.currentTurnPlayerId
       ) || null
     );
   }
 
-  getState(
-    forPlayerId =
-      this.player.id
-  ) {
-    if (!this.state) {
-      return {
-        roomId: this.roomId,
-        status: 'LOBBY',
-        direction: 1,
-        currentColor: null,
-        topCard: null,
-        deckRemaining: 0,
-        discardCount: 0,
-        currentTurnPlayerId: null,
-        turnStartTime: Date.now(),
-        turnDuration: 15,
-        winner: null,
-        lastAction: null,
-        players: [],
-        connected: this.connected,
-        hasDrawnThisTurn:
-          this.hasDrawnThisTurn,
-        lastReaction:
-          this.lastReaction,
-        lastUno:
-          this.lastUno
-      };
-    }
-
-    return {
-      ...this.state,
-
-      connected:
-        this.connected,
-
-      hasDrawnThisTurn:
-        this.hasDrawnThisTurn,
-
-      lastReaction:
-        this.lastReaction,
-
-      lastUno:
-        this.lastUno,
-
-      players:
-        this.state.players.map(
-          player => ({
-            ...player,
-
-            /*
-             * Keep the LOCAL player's actual cards.
-             * Opponents only expose their card count.
-             */
-            hand:
-              player.id ===
-              forPlayerId
-                ? [
-                    ...(player.hand ||
-                      [])
-                  ]
-                : []
-          })
-        )
-    };
-  }
-
-  destroy() {
-    this.listeners.clear();
-
-    if (this.socket) {
-      this.socket.removeAllListeners();
-      this.socket.disconnect();
-      this.socket = null;
-    }
-
-    this.connected = false;
-  }
-}
   getState(forPlayerId = this.player.id) {
     if (!this.state) {
       return {
@@ -687,9 +567,6 @@ export class SocketGameEngine {
       };
     }
 
-    // Backend uses socket.id.
-    // Frontend uses playerProfile.id.
-    // Map the local socket player back to the frontend ID.
     const localSocketId = this.socket?.id;
 
     const players = this.state.players.map(player => {
@@ -704,7 +581,6 @@ export class SocketGameEngine {
           ? this.player.id
           : player.id,
 
-        // Keep the real hand only for the local player.
         hand: isLocalPlayer
           ? [...(player.hand || [])]
           : []
@@ -718,20 +594,25 @@ export class SocketGameEngine {
 
     return {
       ...this.state,
-
       connected: this.connected,
-
       currentTurnPlayerId,
-
-      hasDrawnThisTurn:
-        this.hasDrawnThisTurn,
-
-      lastReaction:
-        this.lastReaction,
-
-      lastUno:
-        this.lastUno,
-
+      hasDrawnThisTurn: this.hasDrawnThisTurn,
+      lastReaction: this.lastReaction,
+      lastUno: this.lastUno,
       players
     };
   }
+
+  destroy() {
+    this.listeners.clear();
+
+    if (this.socket) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+      this.socket = null;
+    }
+
+    this.connected = false;
+  }
+}
+```
