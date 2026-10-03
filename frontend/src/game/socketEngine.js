@@ -1,3 +1,4 @@
+```javascript
 import { io } from 'socket.io-client';
 
 const BACKEND_URL =
@@ -11,14 +12,23 @@ export class SocketGameEngine {
     this.socket = null;
     this.state = null;
     this.players = [];
+
     this.hasDrawnThisTurn = false;
+    this.previousTurnPlayerId = null;
+
     this.listeners = new Set();
     this.connected = false;
+
+    this.lastReaction = null;
+    this.lastUno = null;
 
     this.connect();
 
     if (options.autoCreate !== false) {
-      this.createRoom(options.mode || 'QUICK_MATCH', options.arena || 'ROYAL_PALACE');
+      this.createRoom(
+        options.mode || 'QUICK_MATCH',
+        options.arena || 'ROYAL_PALACE'
+      );
     }
   }
 
@@ -30,10 +40,12 @@ export class SocketGameEngine {
 
     this.socket.on('connect', () => {
       this.connected = true;
+      this.notify();
     });
 
     this.socket.on('disconnect', () => {
       this.connected = false;
+      this.notify();
     });
 
     this.socket.on('GAME_STATE_UPDATE', (state) => {
@@ -46,7 +58,7 @@ export class SocketGameEngine {
       this.state = {
         ...this.state,
         status: 'FINISHED',
-        winner: data.winner || null
+        winner: data?.winner || null
       };
 
       this.syncPlayers();
@@ -54,21 +66,50 @@ export class SocketGameEngine {
     });
 
     this.socket.on('PLAYER_EMOTE', (data) => {
-      this.lastReaction = data;
+      this.lastReaction = {
+        ...data,
+        timestamp: Date.now()
+      };
+
       this.notify();
     });
 
     this.socket.on('UNO_SHOUT', (data) => {
-      this.lastUno = data;
+      this.lastUno = {
+        ...data,
+        timestamp: Date.now()
+      };
+
       this.notify();
     });
   }
 
   applyState(state) {
-    this.state = state || null;
-    this.roomId = state?.roomId || this.roomId;
+    if (!state) return;
+
+    const nextTurnPlayerId = state.currentTurnPlayerId;
+
+    /*
+     * IMPORTANT:
+     * Do not reset hasDrawnThisTurn every time the server sends
+     * a GAME_STATE_UPDATE.
+     *
+     * Drawing a card causes the server to send another state update.
+     * If we reset here, the UI forgets that the player already drew.
+     */
+    if (
+      this.previousTurnPlayerId !== null &&
+      this.previousTurnPlayerId !== nextTurnPlayerId
+    ) {
+      this.hasDrawnThisTurn = false;
+    }
+
+    this.previousTurnPlayerId = nextTurnPlayerId;
+
+    this.state = state;
+    this.roomId = state.roomId || this.roomId;
+
     this.syncPlayers();
-    this.hasDrawnThisTurn = false;
     this.notify();
   }
 
@@ -80,7 +121,9 @@ export class SocketGameEngine {
 
     this.players = this.state.players.map(player => ({
       ...player,
-      hand: Array.isArray(player.hand) ? player.hand : []
+      hand: Array.isArray(player.hand)
+        ? player.hand
+        : []
     }));
   }
 
@@ -88,7 +131,9 @@ export class SocketGameEngine {
     this.listeners.forEach(listener => {
       try {
         listener(this.getState(this.player.id));
-      } catch {}
+      } catch (error) {
+        console.error('SocketGameEngine listener error:', error);
+      }
     });
   }
 
@@ -104,8 +149,23 @@ export class SocketGameEngine {
     };
   }
 
-  createRoom(mode = 'QUICK_MATCH', arena = 'ROYAL_PALACE') {
+  createRoom(
+    mode = 'QUICK_MATCH',
+    arena = 'ROYAL_PALACE'
+  ) {
     if (!this.socket) return;
+
+    /*
+     * QUICK_MATCH must go through the server matchmaking queue.
+     *
+     * The old code created a room first and then queued the same
+     * socket again. That could cause the player to be added twice
+     * or matched incorrectly.
+     */
+    if (mode === 'QUICK_MATCH') {
+      this.queueQuickMatch();
+      return;
+    }
 
     this.socket.emit(
       'CREATE_ROOM',
@@ -116,7 +176,10 @@ export class SocketGameEngine {
       },
       (result) => {
         if (!result?.success) {
-          console.error('CREATE_ROOM failed:', result?.error);
+          console.error(
+            'CREATE_ROOM failed:',
+            result?.error
+          );
           return;
         }
 
@@ -125,27 +188,29 @@ export class SocketGameEngine {
         if (result.state) {
           this.applyState(result.state);
         }
-
-        // Quick Match rooms need to enter the matchmaking queue.
-        if (mode === 'QUICK_MATCH') {
-          this.queueQuickMatch();
-        }
       }
     );
   }
 
   joinRoom(roomId) {
-    if (!this.socket) return;
+    if (!this.socket || !roomId) return;
+
+    const cleanRoomId = String(roomId)
+      .trim()
+      .toUpperCase();
 
     this.socket.emit(
       'JOIN_ROOM',
       {
-        roomId,
+        roomId: cleanRoomId,
         player: this.player
       },
       (result) => {
         if (!result?.success) {
-          console.error('JOIN_ROOM failed:', result?.error);
+          console.error(
+            'JOIN_ROOM failed:',
+            result?.error
+          );
           return;
         }
 
@@ -168,36 +233,63 @@ export class SocketGameEngine {
       },
       (result) => {
         if (!result?.success) {
-          console.error('QUEUE_QUICK_MATCH failed:', result?.error);
+          console.error(
+            'QUEUE_QUICK_MATCH failed:',
+            result?.error
+          );
           return;
         }
 
-        this.roomId = result.roomId || this.roomId;
+        this.roomId =
+          result.roomId || this.roomId;
       }
     );
   }
 
   startMatch() {
     if (!this.socket) {
-      return { success: false };
+      return {
+        success: false,
+        error: 'Not connected'
+      };
     }
 
-    this.socket.emit('START_MATCH', {}, (result) => {
-      if (!result?.success) {
-        console.error('START_MATCH failed:', result?.error);
+    this.socket.emit(
+      'START_MATCH',
+      {},
+      (result) => {
+        if (!result?.success) {
+          console.error(
+            'START_MATCH failed:',
+            result?.error
+          );
+        }
       }
-    });
+    );
 
-    return { success: true };
+    return {
+      success: true,
+      pending: true
+    };
   }
 
-  playCard(playerId, cardId, chosenColor = null) {
+  playCard(
+    playerId,
+    cardId,
+    chosenColor = null
+  ) {
     if (!this.socket) {
-      return { success: false, error: 'Not connected' };
+      return {
+        success: false,
+        error: 'Not connected'
+      };
     }
 
     if (playerId !== this.player.id) {
-      return { success: false, error: 'Invalid player' };
+      return {
+        success: false,
+        error: 'Invalid player'
+      };
     }
 
     this.socket.emit(
@@ -208,7 +300,10 @@ export class SocketGameEngine {
       },
       (result) => {
         if (!result?.success) {
-          console.error('PLAY_CARD failed:', result?.error);
+          console.error(
+            'PLAY_CARD failed:',
+            result?.error
+          );
         }
       }
     );
@@ -221,24 +316,39 @@ export class SocketGameEngine {
 
   drawCard(playerId) {
     if (!this.socket) {
-      return { success: false, error: 'Not connected' };
+      return {
+        success: false,
+        error: 'Not connected'
+      };
     }
 
     if (playerId !== this.player.id) {
-      return { success: false, error: 'Invalid player' };
+      return {
+        success: false,
+        error: 'Invalid player'
+      };
     }
 
     this.hasDrawnThisTurn = true;
 
-    this.socket.emit('DRAW_CARD', {}, (result) => {
-      if (!result?.success) {
-        this.hasDrawnThisTurn = false;
-        console.error('DRAW_CARD failed:', result?.error);
-        return;
-      }
+    this.socket.emit(
+      'DRAW_CARD',
+      {},
+      (result) => {
+        if (!result?.success) {
+          this.hasDrawnThisTurn = false;
 
-      this.hasDrawnThisTurn = true;
-    });
+          console.error(
+            'DRAW_CARD failed:',
+            result?.error
+          );
+
+          return;
+        }
+
+        this.hasDrawnThisTurn = true;
+      }
+    );
 
     return {
       success: true,
@@ -249,20 +359,33 @@ export class SocketGameEngine {
 
   passTurn(playerId) {
     if (!this.socket) {
-      return { success: false, error: 'Not connected' };
+      return {
+        success: false,
+        error: 'Not connected'
+      };
     }
 
     if (playerId !== this.player.id) {
-      return { success: false, error: 'Invalid player' };
+      return {
+        success: false,
+        error: 'Invalid player'
+      };
     }
 
     this.hasDrawnThisTurn = false;
 
-    this.socket.emit('PASS_TURN', {}, (result) => {
-      if (!result?.success) {
-        console.error('PASS_TURN failed:', result?.error);
+    this.socket.emit(
+      'PASS_TURN',
+      {},
+      (result) => {
+        if (!result?.success) {
+          console.error(
+            'PASS_TURN failed:',
+            result?.error
+          );
+        }
       }
-    });
+    );
 
     return {
       success: true,
@@ -271,15 +394,25 @@ export class SocketGameEngine {
   }
 
   callUno(playerId) {
-    if (!this.socket || playerId !== this.player.id) {
+    if (
+      !this.socket ||
+      playerId !== this.player.id
+    ) {
       return false;
     }
 
-    this.socket.emit('CALL_UNO', {}, (result) => {
-      if (!result?.success) {
-        console.error('CALL_UNO failed:', result?.error);
+    this.socket.emit(
+      'CALL_UNO',
+      {},
+      (result) => {
+        if (!result?.success) {
+          console.error(
+            'CALL_UNO failed:',
+            result?.error
+          );
+        }
       }
-    });
+    );
 
     return true;
   }
@@ -296,7 +429,10 @@ export class SocketGameEngine {
       },
       (result) => {
         if (!result?.success) {
-          console.error('CATCH_UNO failed:', result?.error);
+          console.error(
+            'CATCH_UNO failed:',
+            result?.error
+          );
         }
       }
     );
@@ -304,31 +440,55 @@ export class SocketGameEngine {
     return true;
   }
 
-  sendReaction(emote, phrase = null) {
+  sendReaction(
+    emote,
+    phrase = null
+  ) {
     if (!this.socket) return;
 
-    this.socket.emit('SEND_REACTION', {
-      emote,
-      phrase
-    });
+    this.socket.emit(
+      'SEND_REACTION',
+      {
+        emote,
+        phrase
+      }
+    );
   }
 
   rematch() {
     if (!this.socket) {
-      return { success: false };
+      return {
+        success: false,
+        error: 'Not connected'
+      };
     }
 
-    this.socket.emit('REMATCH', {}, (result) => {
-      if (!result?.success) {
-        console.error('REMATCH failed:', result?.error);
+    this.socket.emit(
+      'REMATCH',
+      {},
+      (result) => {
+        if (!result?.success) {
+          console.error(
+            'REMATCH failed:',
+            result?.error
+          );
+        }
       }
-    });
+    );
 
-    return { success: true };
+    return {
+      success: true,
+      pending: true
+    };
   }
 
   canPlayCard(card) {
-    if (!this.state?.topCard || !card) return false;
+    if (
+      !this.state?.topCard ||
+      !card
+    ) {
+      return false;
+    }
 
     if (
       card.type === 'WILD' ||
@@ -337,14 +497,18 @@ export class SocketGameEngine {
       return true;
     }
 
-    if (card.color === this.state.currentColor) {
+    if (
+      card.color ===
+      this.state.currentColor
+    ) {
       return true;
     }
 
     if (
       card.type === 'NUMBER' &&
       this.state.topCard.type === 'NUMBER' &&
-      card.value === this.state.topCard.value
+      card.value ===
+        this.state.topCard.value
     ) {
       return true;
     }
@@ -362,12 +526,16 @@ export class SocketGameEngine {
   getCurrentPlayer() {
     return (
       this.players.find(
-        player => player.id === this.state?.currentTurnPlayerId
+        player =>
+          player.id ===
+          this.state?.currentTurnPlayerId
       ) || null
     );
   }
 
-  getState(forPlayerId = this.player.id) {
+  getState(
+    forPlayerId = this.player.id
+  ) {
     if (!this.state) {
       return {
         roomId: this.roomId,
@@ -376,24 +544,47 @@ export class SocketGameEngine {
         currentColor: null,
         topCard: null,
         deckRemaining: 0,
+        discardCount: 0,
         currentTurnPlayerId: null,
         turnStartTime: Date.now(),
         turnDuration: 15,
         winner: null,
         lastAction: null,
-        players: []
+        players: [],
+        connected: this.connected,
+        hasDrawnThisTurn:
+          this.hasDrawnThisTurn,
+        lastReaction: this.lastReaction,
+        lastUno: this.lastUno
       };
     }
 
     return {
       ...this.state,
-      players: this.state.players.map(player => ({
-        ...player,
-        hand:
-          player.id === forPlayerId
-            ? [...(player.hand || [])]
-            : []
-      }))
+
+      connected: this.connected,
+
+      hasDrawnThisTurn:
+        this.hasDrawnThisTurn,
+
+      lastReaction:
+        this.lastReaction,
+
+      lastUno:
+        this.lastUno,
+
+      players:
+        this.state.players.map(
+          player => ({
+            ...player,
+            hand:
+              player.id === forPlayerId
+                ? [
+                    ...(player.hand || [])
+                  ]
+                : []
+          })
+        )
     };
   }
 
@@ -405,5 +596,8 @@ export class SocketGameEngine {
       this.socket.disconnect();
       this.socket = null;
     }
+
+    this.connected = false;
   }
 }
+```
