@@ -1,4 +1,3 @@
-```javascript
 import { io } from 'socket.io-client';
 
 const BACKEND_URL =
@@ -87,15 +86,12 @@ export class SocketGameEngine {
   applyState(state) {
     if (!state) return;
 
-    const nextTurnPlayerId = state.currentTurnPlayerId;
+    const nextTurnPlayerId =
+      state.currentTurnPlayerId;
 
     /*
-     * IMPORTANT:
-     * Do not reset hasDrawnThisTurn every time the server sends
-     * a GAME_STATE_UPDATE.
-     *
-     * Drawing a card causes the server to send another state update.
-     * If we reset here, the UI forgets that the player already drew.
+     * Only reset the local draw flag when the turn actually changes.
+     * A DRAW_CARD update must not remove the "already drawn" state.
      */
     if (
       this.previousTurnPlayerId !== null &&
@@ -104,10 +100,24 @@ export class SocketGameEngine {
       this.hasDrawnThisTurn = false;
     }
 
-    this.previousTurnPlayerId = nextTurnPlayerId;
+    this.previousTurnPlayerId =
+      nextTurnPlayerId;
 
-    this.state = state;
-    this.roomId = state.roomId || this.roomId;
+    this.state = {
+      ...state,
+
+      players: Array.isArray(state.players)
+        ? state.players.map(player => ({
+            ...player,
+            hand: Array.isArray(player.hand)
+              ? [...player.hand]
+              : []
+          }))
+        : []
+    };
+
+    this.roomId =
+      state.roomId || this.roomId;
 
     this.syncPlayers();
     this.notify();
@@ -119,20 +129,26 @@ export class SocketGameEngine {
       return;
     }
 
-    this.players = this.state.players.map(player => ({
-      ...player,
-      hand: Array.isArray(player.hand)
-        ? player.hand
-        : []
-    }));
+    this.players =
+      this.state.players.map(player => ({
+        ...player,
+        hand: Array.isArray(player.hand)
+          ? [...player.hand]
+          : []
+      }));
   }
 
   notify() {
     this.listeners.forEach(listener => {
       try {
-        listener(this.getState(this.player.id));
+        listener(
+          this.getState(this.player.id)
+        );
       } catch (error) {
-        console.error('SocketGameEngine listener error:', error);
+        console.error(
+          'SocketGameEngine listener error:',
+          error
+        );
       }
     });
   }
@@ -141,7 +157,9 @@ export class SocketGameEngine {
     this.listeners.add(listener);
 
     if (this.state) {
-      listener(this.getState(this.player.id));
+      listener(
+        this.getState(this.player.id)
+      );
     }
 
     return () => {
@@ -149,21 +167,21 @@ export class SocketGameEngine {
     };
   }
 
+  /*
+   * QUICK_MATCH:
+   * Do NOT create a room first.
+   *
+   * The backend matchmaking queue creates the room
+   * and adds this player exactly once.
+   */
   createRoom(
     mode = 'QUICK_MATCH',
     arena = 'ROYAL_PALACE'
   ) {
     if (!this.socket) return;
 
-    /*
-     * QUICK_MATCH must go through the server matchmaking queue.
-     *
-     * The old code created a room first and then queued the same
-     * socket again. That could cause the player to be added twice
-     * or matched incorrectly.
-     */
     if (mode === 'QUICK_MATCH') {
-      this.queueQuickMatch();
+      this.queueQuickMatch(arena);
       return;
     }
 
@@ -174,7 +192,7 @@ export class SocketGameEngine {
         mode,
         arena
       },
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'CREATE_ROOM failed:',
@@ -195,9 +213,10 @@ export class SocketGameEngine {
   joinRoom(roomId) {
     if (!this.socket || !roomId) return;
 
-    const cleanRoomId = String(roomId)
-      .trim()
-      .toUpperCase();
+    const cleanRoomId =
+      String(roomId)
+        .trim()
+        .toUpperCase();
 
     this.socket.emit(
       'JOIN_ROOM',
@@ -205,7 +224,7 @@ export class SocketGameEngine {
         roomId: cleanRoomId,
         player: this.player
       },
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'JOIN_ROOM failed:',
@@ -214,24 +233,30 @@ export class SocketGameEngine {
           return;
         }
 
-        this.roomId = result.roomId;
+        this.roomId =
+          result.roomId;
 
         if (result.state) {
-          this.applyState(result.state);
+          this.applyState(
+            result.state
+          );
         }
       }
     );
   }
 
-  queueQuickMatch() {
+  queueQuickMatch(arena = 'ROYAL_PALACE') {
     if (!this.socket) return;
 
     this.socket.emit(
       'QUEUE_QUICK_MATCH',
       {
-        player: this.player
+        player: {
+          ...this.player,
+          arena
+        }
       },
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'QUEUE_QUICK_MATCH failed:',
@@ -241,7 +266,18 @@ export class SocketGameEngine {
         }
 
         this.roomId =
-          result.roomId || this.roomId;
+          result.roomId ||
+          this.roomId;
+
+        /*
+         * Some backend versions return the initial
+         * state directly. Apply it when available.
+         */
+        if (result.state) {
+          this.applyState(
+            result.state
+          );
+        }
       }
     );
   }
@@ -257,7 +293,7 @@ export class SocketGameEngine {
     this.socket.emit(
       'START_MATCH',
       {},
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'START_MATCH failed:',
@@ -285,7 +321,10 @@ export class SocketGameEngine {
       };
     }
 
-    if (playerId !== this.player.id) {
+    if (
+      playerId !==
+      this.player.id
+    ) {
       return {
         success: false,
         error: 'Invalid player'
@@ -298,7 +337,7 @@ export class SocketGameEngine {
         cardId,
         chosenColor
       },
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'PLAY_CARD failed:',
@@ -322,7 +361,10 @@ export class SocketGameEngine {
       };
     }
 
-    if (playerId !== this.player.id) {
+    if (
+      playerId !==
+      this.player.id
+    ) {
       return {
         success: false,
         error: 'Invalid player'
@@ -334,9 +376,10 @@ export class SocketGameEngine {
     this.socket.emit(
       'DRAW_CARD',
       {},
-      (result) => {
+      result => {
         if (!result?.success) {
-          this.hasDrawnThisTurn = false;
+          this.hasDrawnThisTurn =
+            false;
 
           console.error(
             'DRAW_CARD failed:',
@@ -346,7 +389,8 @@ export class SocketGameEngine {
           return;
         }
 
-        this.hasDrawnThisTurn = true;
+        this.hasDrawnThisTurn =
+          true;
       }
     );
 
@@ -365,19 +409,23 @@ export class SocketGameEngine {
       };
     }
 
-    if (playerId !== this.player.id) {
+    if (
+      playerId !==
+      this.player.id
+    ) {
       return {
         success: false,
         error: 'Invalid player'
       };
     }
 
-    this.hasDrawnThisTurn = false;
+    this.hasDrawnThisTurn =
+      false;
 
     this.socket.emit(
       'PASS_TURN',
       {},
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'PASS_TURN failed:',
@@ -396,7 +444,8 @@ export class SocketGameEngine {
   callUno(playerId) {
     if (
       !this.socket ||
-      playerId !== this.player.id
+      playerId !==
+        this.player.id
     ) {
       return false;
     }
@@ -404,7 +453,7 @@ export class SocketGameEngine {
     this.socket.emit(
       'CALL_UNO',
       {},
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'CALL_UNO failed:',
@@ -427,7 +476,7 @@ export class SocketGameEngine {
       {
         targetPlayerId
       },
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'CATCH_UNO failed:',
@@ -466,7 +515,7 @@ export class SocketGameEngine {
     this.socket.emit(
       'REMATCH',
       {},
-      (result) => {
+      result => {
         if (!result?.success) {
           console.error(
             'REMATCH failed:',
@@ -492,7 +541,8 @@ export class SocketGameEngine {
 
     if (
       card.type === 'WILD' ||
-      card.type === 'WILD_DRAW_FOUR'
+      card.type ===
+        'WILD_DRAW_FOUR'
     ) {
       return true;
     }
@@ -506,7 +556,8 @@ export class SocketGameEngine {
 
     if (
       card.type === 'NUMBER' &&
-      this.state.topCard.type === 'NUMBER' &&
+      this.state.topCard.type ===
+        'NUMBER' &&
       card.value ===
         this.state.topCard.value
     ) {
@@ -514,7 +565,8 @@ export class SocketGameEngine {
     }
 
     if (
-      card.type === this.state.topCard.type &&
+      card.type ===
+        this.state.topCard.type &&
       card.type !== 'NUMBER'
     ) {
       return true;
@@ -528,13 +580,15 @@ export class SocketGameEngine {
       this.players.find(
         player =>
           player.id ===
-          this.state?.currentTurnPlayerId
+          this.state
+            ?.currentTurnPlayerId
       ) || null
     );
   }
 
   getState(
-    forPlayerId = this.player.id
+    forPlayerId =
+      this.player.id
   ) {
     if (!this.state) {
       return {
@@ -554,15 +608,18 @@ export class SocketGameEngine {
         connected: this.connected,
         hasDrawnThisTurn:
           this.hasDrawnThisTurn,
-        lastReaction: this.lastReaction,
-        lastUno: this.lastUno
+        lastReaction:
+          this.lastReaction,
+        lastUno:
+          this.lastUno
       };
     }
 
     return {
       ...this.state,
 
-      connected: this.connected,
+      connected:
+        this.connected,
 
       hasDrawnThisTurn:
         this.hasDrawnThisTurn,
@@ -577,10 +634,17 @@ export class SocketGameEngine {
         this.state.players.map(
           player => ({
             ...player,
+
+            /*
+             * Keep the LOCAL player's actual cards.
+             * Opponents only expose their card count.
+             */
             hand:
-              player.id === forPlayerId
+              player.id ===
+              forPlayerId
                 ? [
-                    ...(player.hand || [])
+                    ...(player.hand ||
+                      [])
                   ]
                 : []
           })
@@ -600,4 +664,3 @@ export class SocketGameEngine {
     this.connected = false;
   }
 }
-```
